@@ -39,3 +39,13 @@ variable "ssh_user" {
   type        = string
   default     = "gary"
 }
+
+variable "orchestrator" {
+  description = "Which orchestrator to run"
+  type        = string
+
+  validation {
+    condition     = contains(["airflow", "kestra", "prefect", "dagster"], var.orchestrator)
+    error_message = "orchestrator must be airflow, kestra, prefect, or dagster"
+  }
+}

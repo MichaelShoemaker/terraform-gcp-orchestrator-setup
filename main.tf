@@ -1,3 +1,7 @@
+locals {
+  vm_name = "orchestrator-${var.orchestrator}"
+}
+
 provider "google" {
   project = var.project_id
   region  = var.region
@@ -5,7 +9,7 @@ provider "google" {
 }
 
 resource "google_compute_instance" "vm" {
-  name         = var.vm_name
+  name         = locals.vm_name
   machine_type = var.vm_machine_type
   zone         = var.zone
 
@@ -23,6 +27,9 @@ resource "google_compute_instance" "vm" {
 
   metadata = {
     ssh-keys = "gary:${file("~/.ssh/gcp.pub")}"
-    user-data = file("${path.module}/user-data.yaml")
+
+    user-data = templatefile("${path.module}/user-data.yaml", {
+      orchestrator = var.orchestrator
+    })
   }
 }
